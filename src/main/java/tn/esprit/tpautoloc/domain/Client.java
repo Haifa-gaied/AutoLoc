@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
+import java.util.List;
 
 @Entity
 @Table(name = "client")
@@ -37,4 +40,8 @@ public class Client {
     private String numPermis;
 
     private LocalDate dateInscription;
+
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    private List<Reservation> reservations;
+
 }

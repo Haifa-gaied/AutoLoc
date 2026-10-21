@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.FetchType;
+import java.util.List;
 
 @Entity
 @Table(name = "equipement")
@@ -20,4 +23,8 @@ public class Equipement {
     private Long idEquipement;
 
     private String libelle;
+
+    @ManyToMany(mappedBy = "equipements", fetch = FetchType.LAZY)
+    private List<Vehicule> vehicules;
+
 }

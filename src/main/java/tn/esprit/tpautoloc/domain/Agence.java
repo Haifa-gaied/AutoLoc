@@ -11,6 +11,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import java.util.List;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
 
 @Entity
 @Table(name = "agence")
@@ -31,4 +34,11 @@ public class Agence {
     private String adresse;
 
     private String telephone;
+
+    @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
+    private List<Employe> employes;
+
+    @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
+    private List<Vehicule> vehicules;
+
 }

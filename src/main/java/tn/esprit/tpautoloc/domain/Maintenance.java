@@ -1,4 +1,3 @@
-
 package tn.esprit.tpautoloc.domain;
 
 import jakarta.persistence.*;
@@ -6,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
 
 @Entity
 @Table(name = "maintenance")
@@ -26,4 +27,9 @@ public class Maintenance {
     private LocalDate dateFin;
 
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicule_id")
+    private Vehicule vehicule;
+
 }
