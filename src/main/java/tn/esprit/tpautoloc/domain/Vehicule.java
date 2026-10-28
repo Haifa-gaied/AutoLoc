@@ -1,6 +1,6 @@
 
 package tn.esprit.tpautoloc.domain;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,10 +45,12 @@ public class Vehicule {
     private Agence agence;
 
     // Relation avec Reservation
+    @JsonIgnore
     @OneToMany(mappedBy = "vehicule", fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 
     // Relation avec Maintenance
+    @JsonIgnore
     @OneToMany(mappedBy = "vehicule", fetch = FetchType.LAZY)
     private List<Maintenance> maintenances;
 

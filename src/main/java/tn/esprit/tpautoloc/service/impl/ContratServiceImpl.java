@@ -28,6 +28,12 @@ public class ContratServiceImpl implements IContratService {
                     "Le montant total ne peut pas être négatif");
         }
 
+        if (contrat.getPaiements() != null) {
+            contrat.getPaiements().forEach(paiement -> {
+                paiement.setContrat(contrat);
+            });
+        }
+
         return contratRepository.save(contrat);
     }
 

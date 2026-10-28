@@ -1,6 +1,6 @@
 
 package tn.esprit.tpautoloc.domain;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -40,7 +40,7 @@ public class Client {
     private String numPermis;
 
     private LocalDate dateInscription;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 

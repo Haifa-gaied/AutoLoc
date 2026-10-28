@@ -4,112 +4,96 @@ package tn.esprit.tpautoloc;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import tn.esprit.tpautoloc.domain.Agence;
 import tn.esprit.tpautoloc.repository.IAgenceRepository;
+
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
+@Transactional
 public class AgenceRepositoryTest {
 
     @Autowired
     private IAgenceRepository agenceRepository;
 
-    @Test
-    void testSaveAgence() {
-
+    private Agence createAgence() {
         Agence agence = new Agence();
-
-        agence.setNom("Agence Tunis");
+        agence.setNom("Agence Test");
         agence.setVille("Tunis");
         agence.setAdresse("Centre-ville");
         agence.setTelephone("71000000");
 
-        Agence agenceEnregistree = agenceRepository.save(agence);
+        return agenceRepository.save(agence);
+    }
 
-        System.out.println("Agence enregistrée : "
-                + agenceEnregistree.getIdAgence());
+    @Test
+    void testSaveAgence() {
+        Agence agence = createAgence();
 
-        assertNotNull(agenceEnregistree.getIdAgence());
+        assertNotNull(agence.getIdAgence());
     }
 
     @Test
     void testFindAllAgences() {
+        Agence agence = createAgence();
 
         List<Agence> agences = agenceRepository.findAll();
 
-        System.out.println("Liste des agences :");
-
-        for (Agence agence : agences) {
-            System.out.println(
-                    agence.getIdAgence() + " - " +
-                            agence.getNom() + " - " +
-                            agence.getVille()
-            );
-        }
-
-        assertFalse(agences.isEmpty());
+        assertTrue(
+                agences.stream().anyMatch(
+                        a -> a.getIdAgence().equals(agence.getIdAgence())
+                )
+        );
     }
 
     @Test
     void testFindAgenceById() {
+        Agence agence = createAgence();
 
-        Long id = 1L;
+        Optional<Agence> resultat =
+                agenceRepository.findById(agence.getIdAgence());
 
-        Optional<Agence> agence = agenceRepository.findById(id);
-
-        assertTrue(agence.isPresent());
-
-        System.out.println("Agence trouvée : "
-                + agence.get().getNom()
-                + " - " + agence.get().getVille());
+        assertTrue(resultat.isPresent());
+        assertEquals(
+                agence.getIdAgence(),
+                resultat.get().getIdAgence()
+        );
     }
 
     @Test
     void testExistsAgenceById() {
+        Agence agence = createAgence();
 
-        boolean existe = agenceRepository.existsById(1L);
-
-        System.out.println("Agence ID 1 existe : " + existe);
+        boolean existe =
+                agenceRepository.existsById(agence.getIdAgence());
 
         assertTrue(existe);
     }
 
     @Test
     void testCountAgences() {
+        Agence agence = createAgence();
 
         long nombreAgences = agenceRepository.count();
 
-        System.out.println("Nombre total d'agences : " + nombreAgences);
-
-        assertTrue(nombreAgences > 0);
+        assertTrue(nombreAgences >= 1);
+        assertTrue(
+                agenceRepository.existsById(agence.getIdAgence())
+        );
     }
 
     @Test
     void testDeleteAgenceById() {
+        Agence agence = createAgence();
+        Long id = agence.getIdAgence();
 
-        Agence agence = new Agence();
-        agence.setNom("Agence à supprimer");
-        agence.setVille("Tunis");
-        agence.setAdresse("Centre-ville");
-        agence.setTelephone("71000001");
-
-        // Enregistrer une agence temporaire
-        Agence agenceEnregistree = agenceRepository.save(agence);
-        Long id = agenceEnregistree.getIdAgence();
-
-        // Supprimer cette agence
         agenceRepository.deleteById(id);
 
-        // Vérifier qu'elle n'existe plus
-        boolean existe = agenceRepository.existsById(id);
-
-        assertFalse(existe);
-
-        System.out.println("Agence supprimée avec succès : ID " + id);
+        assertFalse(agenceRepository.existsById(id));
     }
-
-
-
 }
