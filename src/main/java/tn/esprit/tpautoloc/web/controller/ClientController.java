@@ -1,17 +1,17 @@
-
 package tn.esprit.tpautoloc.web.controller;
 
-import tn.esprit.tpautoloc.domain.Client;
-import tn.esprit.tpautoloc.service.IClientService;
-
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import tn.esprit.tpautoloc.domain.Client;
+import tn.esprit.tpautoloc.dto.ClientDTO;
+import tn.esprit.tpautoloc.mapper.ClientMapper;
+import tn.esprit.tpautoloc.service.IClientService;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ import java.util.List;
 public class ClientController {
 
     private final IClientService clientService;
+    private final ClientMapper clientMapper;
 
     // GET - Lister tous les clients
     @Operation(summary = "Lister tous les clients")
@@ -33,8 +34,11 @@ public class ClientController {
             description = "Liste des clients récupérée avec succès"
     )
     @GetMapping
-    public List<Client> findAll() {
-        return clientService.findAll();
+    public List<ClientDTO> findAll() {
+        return clientService.findAll()
+                .stream()
+                .map(clientMapper::toDTO)
+                .toList();
     }
 
     // GET - Consulter un client par ID
@@ -42,8 +46,9 @@ public class ClientController {
     @ApiResponse(responseCode = "200", description = "Client trouvé")
     @ApiResponse(responseCode = "404", description = "Client introuvable")
     @GetMapping("/{id}")
-    public Client findById(@PathVariable Long id) {
-        return clientService.findById(id);
+    public ClientDTO findById(@PathVariable Long id) {
+        Client client = clientService.findById(id);
+        return clientMapper.toDTO(client);
     }
 
     // POST - Créer un client
@@ -52,8 +57,10 @@ public class ClientController {
     @ApiResponse(responseCode = "400", description = "Données invalides")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Client create(@RequestBody Client client) {
-        return clientService.create(client);
+    public ClientDTO create(@Valid @RequestBody ClientDTO clientDTO) {
+        Client client = clientMapper.toEntity(clientDTO);
+        Client clientCree = clientService.create(client);
+        return clientMapper.toDTO(clientCree);
     }
 
     // PUT - Modifier un client
@@ -62,10 +69,13 @@ public class ClientController {
     @ApiResponse(responseCode = "400", description = "Données invalides")
     @ApiResponse(responseCode = "404", description = "Client introuvable")
     @PutMapping("/{id}")
-    public Client update(
+    public ClientDTO update(
             @PathVariable Long id,
-            @RequestBody Client client) {
-        return clientService.update(id, client);
+            @Valid @RequestBody ClientDTO clientDTO) {
+
+        Client client = clientMapper.toEntity(clientDTO);
+        Client clientModifie = clientService.update(id, client);
+        return clientMapper.toDTO(clientModifie);
     }
 
     // DELETE - Supprimer un client
